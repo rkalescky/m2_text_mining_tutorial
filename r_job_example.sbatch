@@ -6,5 +6,5 @@
 module purge
 module load r
 
-R --vanilla  < r_script.R
+R --vanilla < r_script.R
 
