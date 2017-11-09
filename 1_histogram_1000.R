@@ -12,7 +12,7 @@ setup_twitter_oauth("nkywhHqejlG9RlvEX19WWSnPs",
 "YoUbIvZ26fhYqnfydJakgI2jj7fPwk6tRzuXmoJ1i4L2p")
 
 # Search for tweets
-tweets <- searchTwitter('#metoo', n = 100, lang = 'en')
+tweets <- searchTwitter('#metoo', n = 1000, lang = 'en')
 
 # Convert tweets to data.frame
 df <- twListToDF(tweets)
@@ -31,10 +31,9 @@ dtm <- DocumentTermMatrix(text_corpus,
       removeNumbers = TRUE,
       tolower = TRUE))
 
-# 
 freq <- sort(colSums(as.matrix(dtm)), decreasing=TRUE)
 wf <- data.frame(word=names(freq), freq=freq)
-subset(wf, freq > 1)    %>%
+subset(wf, freq > 1) %>%
    ggplot(aes(word, freq)) +
    geom_bar(stat="identity", fill="darkred", colour="darkgreen") +
    theme(axis.text.x=element_text(angle=45, hjust=1))
