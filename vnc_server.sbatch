@@ -27,4 +27,3 @@ echo "Using vnc port: ${port_vnc}"
 echo "Mac/Linux: \"ssh -L ${port_vnc}:localhost:${port_job} ${USER}@login01.m2.smu.edu\""
 echo "Access VNC instance using: \"localhost:${port_vnc}\""
 wait
-
