@@ -20,7 +20,14 @@ Set Up Twitter Application
 #. Select the "Keys and Access Tokens" tab.
 #. Press "Create my access token" at the bottom of the page.
 #. Take note of the "Consumer Key (API Key)", "Consumer Secret (API Secret)",
-   "Access Token", and "Access Token Secret"
+   "Access Token", and "Access Token Secret" in a text file named ``twitter_oauth.txt`` with each of these values on different lines and in order given here, e.g.
+
+.. code::
+   77cK1wlNXwc9em05mCCP47B7p
+   kGLw4hzCGqwYJgAtR4c8pX6WGVsHt1Y87AgOwAt1iWGivDeqfz
+   927642335864815616-1yqvpzHTaK5RjwdQBulL7OPpDE7U9Du
+   k4ruVhTzJE6jNHGbVmztGW0M4BaEQqaYywlUlVYWXxDUW
+
 #. Select the "Permissions" tab.
 #. Select "Read, Write and Access direct messages" under "Access".
 #. Press "Update Settings".
@@ -119,7 +126,7 @@ Running R Interactively with RStudio
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The RStudio graphical user interface can be run directly off of
-ManeFrame II compute nodes using X11 forwarding.
+ManeFrame II compute nodes using X11 forwarding or a VNC instance. The VNC method is recommended.
 
 Running R Graphical User Interface Via X11 Forwarding
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -140,6 +147,60 @@ access.
 
        module load rstudio
        srun -p htc --mem=6G --x11=first --pty rstudio
+
+Running R Graphical User Interface Using VNC
+""""""""""""""""""""""""""""""""""""""""""""
+
+Running RStudio via a VNC instance requires that a VNC client is installed on the local machine. While many VNC clients will likely work, these instructions are for using the RealVNC Viewer client, which is recommended. The first steps are to download and install the RealVNC client and need only be done once.
+
+1. Download RealVNC Viewer client for your operating system from ` here.<https://www.realvnc.com/en/connect/download/viewer/>`_
+2. Install the RealVNC client:
+
+   Windows
+      
+      1. Double click the installer and follow instructions.
+      
+   Mac
+   
+      1. Click on DMG file to open
+      2. Drag RealVNC application to the Applications folder
+      
+3. Log into the cluster using SSH and run the following commands at the
+   command prompt.
+4. ``srun -p workshop --pty vncpasswd`` to setup your VNC password. Choose something different than your SMU/M2 password. This step needs only be done once.
+5. ``module load rstudio`` to enable access to R and RStudio.
+6. ``cd`` to directory with RStudio Slurm submit script.
+7. ``sbatch vnc_server.sbatch`` to submit job to queue.
+8. ``squeue -u $USER`` and look for the job ID of the job with the name "vnc_rstudio".
+9. Once the job has been allocated resources and started to run look in the output file of the job where the output file will have the file name "vnc_rstudio_<job_ID>.out", where ``<job_ID>`` is the job ID noted noted in the previous step. For example, ``tail -f vnc_rstudio_678824.out`` will show the output file and any updates to it. The running job takes about 30 to 60 seconds to start VNC and launch RStudio. Using ``tail -f `` is useful here because it will continuously show updates to the output file as the VNC and RStudio instances are started.
+10. Once the output file shows lines similar to the following you will know that the VNC instance and RStudio have been properly started. Note the information give for "Using vnc port" and "Access VNC instance using". Note the information give for "Mac/Linux" if you are using a Mac or Linux computer.
+
+.. code:: bash
+
+   Using job port: 49976
+   Using vnc port: 5917
+   Mac/Linux: "ssh -L 5917:localhost:49976 rkalescky@login01.m2.smu.edu"
+   Access VNC instance using: "localhost:5917"
+
+11. Setup SSH port forwarding from your local computer to M2:
+
+   Windows
+   
+      1. Start new Putty instance.
+      2. Setup M2 login information as usual, but don't log in yet.
+      3. Once the usual M2 login information has been entered, go to "Category:" (on the left), "Connection", "SSH", and then "Tunnels".
+      4. Under "Add new forwarded port:", give the value of "Using vnc port" for "Source port" and "Access VNC instance using:" for "Destination" and then click "Add".
+      5. Press "Open" to log into M2.
+       
+   Mac
+   
+      1. Open new Terminal instance or new tab
+      2. Copy and paste into the new instance the information noted for "Mac/Linux" beginning, e.g. ``ssh -L 5917:localhost:49976 rkalescky@login01.m2.smu.edu``. Press enter and give M2 password when prompted.
+
+12. Start the "VNC Viewer" application.
+13. Enter the information from "Access VNC instance using" in the "Enter a VNC Server address or search" field and press enter.
+14. You may be prompted concerning an "Unencrypted connection", if so press "Continue". Note that the connection is actually encrypted using SSH.
+15. Enter VNC password setup previously and you will be presented with a window in which RStudio is running.
 
 Running R Non-Interactively in Batch Mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

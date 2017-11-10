@@ -17,6 +17,23 @@ tweets <- searchTwitter('#metoo', n = 1000, lang = 'en')
 # Convert tweets to data.frame
 df <- twListToDF(tweets)
 
+# Make bigrams
+unigrams <- df %>%
+   unnest_tokens(unigram, text, token = "ngrams", n = 1)
+
+custom_stop_words <- bind_rows(data_frame(word = c("https", "metoo", "t.co", "rt", "amp"),lexicon = c("custom")), stop_words)  
+
+bigrams_filtered <- bigrams_separated %>%
+  filter(!word1 %in% custom_stop_words$word) %>%
+  filter(!word2 %in% custom_stop_words$word)
+
+# Count bigrams
+bigram_counts <- bigrams_filtered %>% 
+  count(word1, word2, sort = TRUE)
+
+# View bigrams
+head(bigram_counts)
+
 # Get just the tweet text as list
 tweet_text <- df[,"text"]
 
@@ -26,7 +43,7 @@ text_corpus = Corpus(VectorSource(tweet_text))
 # Generate document-term matrix
 dtm <- DocumentTermMatrix(text_corpus,
    control = list(
-      stopwords = stopwords("english")
+      stopwords = stopwords("english"),
       removePunctuation = TRUE,
       removeNumbers = TRUE,
       tolower = TRUE))
